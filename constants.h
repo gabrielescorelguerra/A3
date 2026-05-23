@@ -1,0 +1,18 @@
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
+enum Trajectories {
+    GM_TRAJECTORY_UP = 0,
+    GM_TRAJECTORY_RIGHT = 1,
+    GM_TRAJECTORY_DOWN = 2,
+    GM_TRAJECTORY_LEFT = 3
+};
+
+#define GM_WALK_STEP 10
+#define GM_PLAYER_WIDTH 100
+#define GM_PLAYER_HEIGHT 200 
+
+#define GM_SCREEN_X 1080
+#define GM_SCREEN_Y 720
+
+#endif

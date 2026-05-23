@@ -1,9 +1,8 @@
 CC = gcc
 CFLAGS = -Wall -g
-ALLEGRO_FLAGS = $(shell pkg-config allegro-5 allegro_main-5 allegro_font-5 allegro_primitives-5 --libs --cflags)
+ALLEGRO_FLAGS = -mmacosx-version-min=26 $(shell pkg-config allegro-5 allegro_main-5 allegro_font-5 allegro_primitives-5 --libs --cflags)
 
-OBJ = player.o
-SOURCES = player.c main.c
+SOURCES = player.c joystick.c movement.c main.c 
 TARGET = main
 
 # gcc main.c -o main player.o $(pkg-config allegro-5 allegro_main-5 allegro_font-5 --libs --cflags)

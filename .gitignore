@@ -1,0 +1,8 @@
+# Configurações locais do VS Code
+.vscode/
+
+# Diretório de materiais auxiliares da faculdade
+Material_Auxiliar/
+
+# Arquivo executavel
+main
