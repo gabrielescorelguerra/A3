@@ -12,6 +12,8 @@
 
 #define FRAME_RATE 60
 
+// talvez adicionar must_init
+
 int main() {
     al_init();
     al_init_primitives_addon();		
@@ -33,8 +35,7 @@ int main() {
     player *player = player_create (0, 0);
     if (!player)
         return -1;
-
-    ALLEGRO_BITMAP *player_bitmap = al_load_bitmap("../assets/player.png");
+    ALLEGRO_BITMAP *player_bitmap = al_load_bitmap("assets/player.png");
 
     // execução
     ALLEGRO_EVENT event;
@@ -45,10 +46,9 @@ int main() {
         if (event.type == ALLEGRO_EVENT_TIMER) {
             update_position_player(player);
 
-            al_draw_bitmap(player_bitmap, 100, 100, 0);
-
-            al_clear_to_color(al_map_rgb(0, 0, 0));	
-            al_draw_filled_rectangle(player->x, player->y, player->x + player->width, player->y + player->height, al_map_rgb(255, 255, 255));		
+            al_clear_to_color(al_map_rgb(0, 0, 255));	
+            al_draw_bitmap(player_bitmap, player->x, player->y, 0);
+            // al_draw_filled_rectangle(player->x, player->y, player->x + player->width, player->y + player->height, al_map_rgb(255, 255, 255));		
             al_flip_display();
         }
 

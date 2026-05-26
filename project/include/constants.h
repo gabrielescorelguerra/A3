@@ -9,10 +9,10 @@ enum Trajectories {
 };
 
 #define GM_WALK_STEP 10
-#define GM_PLAYER_WIDTH 100
-#define GM_PLAYER_HEIGHT 200 
+#define GM_PLAYER_WIDTH 128
+#define GM_PLAYER_HEIGHT 128
 
-#define GM_SCREEN_X 1080
+#define GM_SCREEN_X 1280
 #define GM_SCREEN_Y 720
 
 #endif
