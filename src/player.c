@@ -6,13 +6,13 @@
 
 #include "stdio.h"
 
-player *player_create(int x, int y) {
+player *player_create() {
     player *new_player;
     if (! (new_player = malloc(sizeof (player))))
         return NULL;
 
-    new_player->x = x;
-    new_player->y = y;
+    new_player->x = 0;
+    new_player->y = 0;
     new_player->width = GM_PLAYER_WIDTH;
     new_player->height = GM_PLAYER_HEIGHT;
     new_player->step_size = GM_WALK_STEP;

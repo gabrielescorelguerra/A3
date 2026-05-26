@@ -32,10 +32,12 @@ int main() {
     al_register_event_source(queue, al_get_timer_event_source(timer));
 
     // cria player
-    player *player = player_create (0, 0);
+    player *player = player_create ();
     if (!player)
         return -1;
     ALLEGRO_BITMAP *player_bitmap = al_load_bitmap("assets/player.png");
+
+    ALLEGRO_BITMAP *background_bitmap = al_load_bitmap("assets/teste.jpg");
 
     // execução
     ALLEGRO_EVENT event;
@@ -46,9 +48,24 @@ int main() {
         if (event.type == ALLEGRO_EVENT_TIMER) {
             update_position_player(player);
 
-            al_clear_to_color(al_map_rgb(0, 0, 255));	
-            al_draw_bitmap(player_bitmap, player->x, player->y, 0);
-            // al_draw_filled_rectangle(player->x, player->y, player->x + player->width, player->y + player->height, al_map_rgb(255, 255, 255));		
+            int center = GM_SCREEN_X/2 - player->width/2;
+            int x_bg = - player->x + center;
+
+            // FUNDO
+            al_clear_to_color(al_map_rgb(0, 0, 0));
+            // depois ver como colocar melhor esses valores
+
+            // fazer com ? : ou case switch ou funcao local de renderizacao
+            if (player->x < center) {
+                al_draw_scaled_bitmap(background_bitmap, 0, 0, 720, 360, 0, 0, GM_BACKGROUND_X, GM_SCREEN_Y, 0);
+                al_draw_bitmap(player_bitmap, player->x, player->y, 0);
+            } else if (player->x > (GM_BACKGROUND_X - GM_SCREEN_X)) {
+                al_draw_scaled_bitmap(background_bitmap, 0, 0, 720, 360, center - (GM_BACKGROUND_X - GM_SCREEN_X), 0, GM_BACKGROUND_X, GM_SCREEN_Y, 0);
+                al_draw_bitmap(player_bitmap, player->x - (GM_BACKGROUND_X - GM_SCREEN_X) + center, player->y, 0);
+            } else {
+                al_draw_scaled_bitmap(background_bitmap, 0, 0, 720, 360, x_bg, 0, GM_BACKGROUND_X, GM_SCREEN_Y, 0);
+                al_draw_bitmap(player_bitmap, center, player->y, 0); 
+            }
             al_flip_display();
         }
 
@@ -74,6 +91,7 @@ int main() {
     }
 
     al_destroy_bitmap(player_bitmap);
+    al_destroy_bitmap(background_bitmap);
 
     al_destroy_font(font);
     al_destroy_display(disp);

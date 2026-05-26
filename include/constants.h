@@ -15,4 +15,9 @@ enum Trajectories {
 #define GM_SCREEN_X 1280
 #define GM_SCREEN_Y 720
 
+#define GM_VEL_X 5
+#define GM_CAMERA_X = 0
+
+#define GM_BACKGROUND_X (GM_SCREEN_X * 4)
+
 #endif

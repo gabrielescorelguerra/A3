@@ -12,7 +12,7 @@ typedef struct {
     joystick *control;
 } player;
 
-player *player_create(int x, int y);
+player *player_create();
 void player_move(player *player, int steps, int trajectory, int max_x, int max_y);
 void player_destroy(player *player);
 
