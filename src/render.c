@@ -4,6 +4,7 @@
 #include "render.h"
 #include "player.h"
 #include "constants.h"
+#include "mob.h"
 
 void render_player(player *player, ALLEGRO_BITMAP *player_bitmap_sheet, int camera_x) {
 
@@ -41,5 +42,15 @@ void render_player(player *player, ALLEGRO_BITMAP *player_bitmap_sheet, int came
         GM_PLAYER_WIDTH, GM_PLAYER_HEIGHT,
         + player->x - camera_x - player->width/2, player->y - player->height/2,
         tag
+    );
+}
+
+void render_mob (Mob *mob, ALLEGRO_BITMAP *player_bitmap_sheet, int camera_x) {
+    al_draw_bitmap_region(
+        player_bitmap_sheet,
+        0, 0,
+        mob->h, mob->w,
+        mob->x - camera_x - mob->w/2, mob->y - mob->h/2,
+        0
     );
 }

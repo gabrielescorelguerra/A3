@@ -5,6 +5,8 @@
 
 #include <stdio.h>
 
+// ver includes caso nao seja no vs code (pra ser tipo ../include/)
+
 #include "player.h"
 #include "constants.h"
 #include "movement.h"
@@ -14,6 +16,7 @@
 #include "platform.h"
 #include "render.h"
 #include "animations.h"
+#include "mob.h"
 
 #define FRAME_RATE 30
 
@@ -47,8 +50,10 @@ int main() {
         return -1;
 
     platform *platform = platform_create (GM_WORLD_W/2, GM_SCREEN_H - 100, GM_WORLD_W, 100);
+    Mob *mob = mob_create (300, 0, 128, 128, 400, 0, 10);
 
     ALLEGRO_BITMAP *player_bitmap_sheet = al_load_bitmap("assets/player.png");
+    ALLEGRO_BITMAP *mob_bitmap = al_load_bitmap("assets/mob.png");
     ALLEGRO_BITMAP *background_bitmap = al_load_bitmap("assets/teste.jpg");
 
     // camera
@@ -67,13 +72,14 @@ int main() {
 
             // updates
             update_position_player(player);
+            mob_move (mob);
+
             al_clear_to_color(al_map_rgb(0, 0, 0));
 
             Hitbox player_hitbox = player_get_hitbox(player);
             Hitbox platform_hitbox = platform_get_hitbox(platform);
 
             if (collision (player_hitbox, platform_hitbox)) {
-                player->x = old_player_x;
                 player->y = old_player_y;
                 player->grounded = 1;
                 player->vy = 0;
@@ -92,7 +98,7 @@ int main() {
             al_draw_scaled_bitmap(background_bitmap, 0, 0, 720, 360, -camera_x, 0, GM_WORLD_W, GM_SCREEN_H, 0);
             animation_update(player);
             render_player(player, player_bitmap_sheet, camera_x);
-
+            render_mob(mob, mob_bitmap, camera_x);
 
             // teste
             /*
