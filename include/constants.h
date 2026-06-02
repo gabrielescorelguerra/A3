@@ -11,8 +11,11 @@ enum Trajectories {
 
 typedef enum AnimState {
     ANIM_IDLE,
-    ANIM_WALK,
-    ANIM_JUMP,
+    ANIM_WALK_FOWARD,
+    ANIM_WALK_BACKWARD,
+    ANIM_JUMP_FOWARD,
+    ANIM_JUMP_BACKWARD,
+    ANIM_JUMP_IDLE,
     ANIM_FALL
 } AnimState;
 

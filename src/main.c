@@ -11,16 +11,16 @@
 #include "joystick.h"
 #include "geometry.h"
 #include "collision.h"
-#include "plataform.h"
+#include "platform.h"
 #include "render.h"
 #include "animations.h"
 
 #define FRAME_RATE 30
 
-#define TEST_PLAT_X 300
-#define TEST_PLAT_Y 400
-#define TEST_PLAT_W 200
-#define TEST_PLAT_H 100
+#define TEST_PLAT_X GM_WORLD_W/2
+#define TEST_PLAT_Y 720
+#define TEST_PLAT_W GM_WORLD_W
+#define TEST_PLAT_H 300
 
 // talvez adicionar must_init
 
@@ -46,7 +46,7 @@ int main() {
     if (!player)
         return -1;
 
-    plataform *plataform = plataform_create (TEST_PLAT_X, TEST_PLAT_Y, TEST_PLAT_W, TEST_PLAT_H);
+    platform *platform = platform_create (GM_WORLD_W/2, GM_SCREEN_H - 100, GM_WORLD_W, 100);
 
     ALLEGRO_BITMAP *player_bitmap_sheet = al_load_bitmap("assets/player.png");
     ALLEGRO_BITMAP *background_bitmap = al_load_bitmap("assets/teste.jpg");
@@ -70,14 +70,16 @@ int main() {
             al_clear_to_color(al_map_rgb(0, 0, 0));
 
             Hitbox player_hitbox = player_get_hitbox(player);
-            Hitbox platform_hitbox = plataform_get_hitbox(plataform);
+            Hitbox platform_hitbox = platform_get_hitbox(platform);
 
             if (collision (player_hitbox, platform_hitbox)) {
                 player->x = old_player_x;
                 player->y = old_player_y;
                 player->grounded = 1;
                 player->vy = 0;
-            }
+            } /* else {
+                player->grounded = 0;
+            }*/
 
             // camera
             camera_x = player->x - GM_CAMERA_TRIGGER_X;;
@@ -93,13 +95,14 @@ int main() {
 
 
             // teste
+            /*
             al_draw_filled_rectangle(
-                TEST_PLAT_X - TEST_PLAT_W/2,
+                TEST_PLAT_X - TEST_PLAT_W/2 - camera_x,
                 TEST_PLAT_Y - TEST_PLAT_H/2,
-                TEST_PLAT_X + TEST_PLAT_W/2,
+                TEST_PLAT_X + TEST_PLAT_W/2 - camera_x,
                 TEST_PLAT_Y + TEST_PLAT_H/2,
                 al_map_rgb(255,255,255)
-            );
+            );*/
 
             al_flip_display();
         }

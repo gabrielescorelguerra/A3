@@ -8,9 +8,9 @@ typedef struct {
     int y;
     int width;
     int height;
-} plataform;
+} platform;
 
-plataform *plataform_create(int x, int y, int width, int height);
-Hitbox plataform_get_hitbox(plataform *plataform);
+platform *platform_create(int x, int y, int width, int height);
+Hitbox platform_get_hitbox(platform *platform);
 
 #endif

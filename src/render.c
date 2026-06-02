@@ -6,35 +6,40 @@
 #include "constants.h"
 
 void render_player(player *player, ALLEGRO_BITMAP *player_bitmap_sheet, int camera_x) {
+
+    int bitmap_y;
+    int tag = 0;
+
     // fazer switch so mudar o bitmap ja q o resto n muda
     switch (player->anim)
     {
     case ANIM_IDLE:
-        al_draw_bitmap_region(
-            player_bitmap_sheet,
-            0, GM_PLAYER_HEIGHT*4,
-            GM_PLAYER_WIDTH, GM_PLAYER_HEIGHT,
-            player->x - camera_x - player->x/2, player->y - player->height/2,
-            0
-        );
+        bitmap_y = GM_PLAYER_HEIGHT*4;
         break;
-    case ANIM_WALK:
-        al_draw_bitmap_region(
-            player_bitmap_sheet,
-            0, 0,
-            GM_PLAYER_WIDTH, GM_PLAYER_HEIGHT,
-            player->x - camera_x - player->x/2, player->y - player->height/2,
-            0
-        );
+    case ANIM_WALK_FOWARD:
+        bitmap_y = 0;
+        break;
+    case ANIM_WALK_BACKWARD:
+        bitmap_y = 0;
+        tag = ALLEGRO_FLIP_HORIZONTAL;
+        break;
+    case ANIM_JUMP_FOWARD:
+        bitmap_y = GM_PLAYER_HEIGHT*2;
+        break;
+    case ANIM_JUMP_BACKWARD:
+        bitmap_y = GM_PLAYER_HEIGHT*2;
+        tag = ALLEGRO_FLIP_HORIZONTAL;
         break;
     default:
-        al_draw_bitmap_region(
-            player_bitmap_sheet,
-            0, GM_PLAYER_HEIGHT*2,
-            GM_PLAYER_WIDTH, GM_PLAYER_HEIGHT,
-            player->x - camera_x - player->x/2, player->y - player->height/2,
-            0
-        );
+        bitmap_y = GM_PLAYER_HEIGHT*4;
         break;
     }
+
+    al_draw_bitmap_region(
+        player_bitmap_sheet,
+        0, bitmap_y,
+        GM_PLAYER_WIDTH, GM_PLAYER_HEIGHT,
+        + player->x - camera_x - player->width/2, player->y - player->height/2,
+        tag
+    );
 }
