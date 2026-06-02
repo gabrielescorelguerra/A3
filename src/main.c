@@ -9,8 +9,18 @@
 #include "constants.h"
 #include "movement.h"
 #include "joystick.h"
+#include "geometry.h"
+#include "collision.h"
+#include "plataform.h"
+#include "render.h"
+#include "animations.h"
 
-#define FRAME_RATE 60
+#define FRAME_RATE 30
+
+#define TEST_PLAT_X 300
+#define TEST_PLAT_Y 400
+#define TEST_PLAT_W 200
+#define TEST_PLAT_H 100
 
 // talvez adicionar must_init
 
@@ -25,7 +35,7 @@ int main() {
     ALLEGRO_TIMER *timer = al_create_timer (1.0 / FRAME_RATE);
     ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
     ALLEGRO_FONT* font = al_create_builtin_font();
-    ALLEGRO_DISPLAY* disp = al_create_display(GM_SCREEN_X, GM_SCREEN_Y);
+    ALLEGRO_DISPLAY* disp = al_create_display(GM_SCREEN_W, GM_SCREEN_H);
 
     al_register_event_source(queue, al_get_keyboard_event_source());
     al_register_event_source(queue, al_get_display_event_source(disp));	
@@ -35,9 +45,14 @@ int main() {
     player *player = player_create ();
     if (!player)
         return -1;
-    ALLEGRO_BITMAP *player_bitmap = al_load_bitmap("assets/player.png");
 
+    plataform *plataform = plataform_create (TEST_PLAT_X, TEST_PLAT_Y, TEST_PLAT_W, TEST_PLAT_H);
+
+    ALLEGRO_BITMAP *player_bitmap_sheet = al_load_bitmap("assets/player.png");
     ALLEGRO_BITMAP *background_bitmap = al_load_bitmap("assets/teste.jpg");
+
+    // camera
+    int camera_x;
 
     // execução
     ALLEGRO_EVENT event;
@@ -46,51 +61,74 @@ int main() {
         al_wait_for_event(queue, &event);
 
         if (event.type == ALLEGRO_EVENT_TIMER) {
+
+            int old_player_x = player->x;
+            int old_player_y = player->y;
+
+            // updates
             update_position_player(player);
-
-            int center = GM_SCREEN_X/2 - player->width/2;
-            int x_bg = - player->x + center;
-
-            // FUNDO
             al_clear_to_color(al_map_rgb(0, 0, 0));
-            // depois ver como colocar melhor esses valores
 
-            // fazer com ? : ou case switch ou funcao local de renderizacao
-            if (player->x < center) {
-                al_draw_scaled_bitmap(background_bitmap, 0, 0, 720, 360, 0, 0, GM_BACKGROUND_X, GM_SCREEN_Y, 0);
-                al_draw_bitmap(player_bitmap, player->x, player->y, 0);
-            } else if (player->x > (GM_BACKGROUND_X - GM_SCREEN_X)) {
-                al_draw_scaled_bitmap(background_bitmap, 0, 0, 720, 360, center - (GM_BACKGROUND_X - GM_SCREEN_X), 0, GM_BACKGROUND_X, GM_SCREEN_Y, 0);
-                al_draw_bitmap(player_bitmap, player->x - (GM_BACKGROUND_X - GM_SCREEN_X) + center, player->y, 0);
-            } else {
-                al_draw_scaled_bitmap(background_bitmap, 0, 0, 720, 360, x_bg, 0, GM_BACKGROUND_X, GM_SCREEN_Y, 0);
-                al_draw_bitmap(player_bitmap, center, player->y, 0); 
+            Hitbox player_hitbox = player_get_hitbox(player);
+            Hitbox platform_hitbox = plataform_get_hitbox(plataform);
+
+            if (collision (player_hitbox, platform_hitbox)) {
+                player->x = old_player_x;
+                player->y = old_player_y;
+                player->grounded = 1;
+                player->vy = 0;
             }
+
+            // camera
+            camera_x = player->x - GM_CAMERA_TRIGGER_X;;
+            if (camera_x < 0)
+                camera_x = 0;
+            if (camera_x > GM_WORLD_W - GM_SCREEN_W)
+                camera_x = GM_WORLD_W - GM_SCREEN_W;
+
+            // render
+            al_draw_scaled_bitmap(background_bitmap, 0, 0, 720, 360, -camera_x, 0, GM_WORLD_W, GM_SCREEN_H, 0);
+            animation_update(player);
+            render_player(player, player_bitmap_sheet, camera_x);
+
+
+            // teste
+            al_draw_filled_rectangle(
+                TEST_PLAT_X - TEST_PLAT_W/2,
+                TEST_PLAT_Y - TEST_PLAT_H/2,
+                TEST_PLAT_X + TEST_PLAT_W/2,
+                TEST_PLAT_Y + TEST_PLAT_H/2,
+                al_map_rgb(255,255,255)
+            );
+
             al_flip_display();
         }
 
         // registra movimentos
         if (event.type == ALLEGRO_EVENT_KEY_DOWN || event.type == ALLEGRO_EVENT_KEY_UP) {
             switch (event.keyboard.keycode) {
-            case ALLEGRO_KEY_UP:
-                joystick_up(player->control);
-                break;
-            case ALLEGRO_KEY_RIGHT:
-                joystick_right(player->control);
-                break;
-            case ALLEGRO_KEY_DOWN:
-                joystick_down(player->control);
-                break;
-            case ALLEGRO_KEY_LEFT:
-                joystick_left(player->control);
-                break;
+                case ALLEGRO_KEY_UP:
+                    joystick_up(player->control);
+                    break;
+                case ALLEGRO_KEY_RIGHT:
+                    joystick_right(player->control);
+                    break;
+                case ALLEGRO_KEY_DOWN:
+                    joystick_down(player->control);
+                    break;
+                case ALLEGRO_KEY_LEFT:
+                    joystick_left(player->control);
+                    break;
+                case ALLEGRO_KEY_SPACE:
+                    (event.type == ALLEGRO_EVENT_KEY_DOWN) ? joystick_jump_hold(player->control) : joystick_jump_release(player->control);
+                    break;
             }
         }
 
         else if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE) break;	
     }
 
-    al_destroy_bitmap(player_bitmap);
+    al_destroy_bitmap(player_bitmap_sheet);
     al_destroy_bitmap(background_bitmap);
 
     al_destroy_font(font);

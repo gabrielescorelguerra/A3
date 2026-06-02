@@ -8,6 +8,7 @@ typedef struct {
     unsigned char right;
     unsigned char down;
     unsigned char left;
+    int jump;
 } joystick;
 
 joystick *joystick_create();
@@ -16,5 +17,7 @@ void joystick_up(joystick *joystick);
 void joystick_right(joystick *joystick);
 void joystick_down(joystick *joystick);
 void joystick_left(joystick *joystick);
+void joystick_jump_hold(joystick *joystick);
+void joystick_jump_release(joystick *joystick);
 
 #endif

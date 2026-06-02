@@ -1,6 +1,8 @@
 #ifndef COLLISION_H
 #define COLLISION_H
 
-// colocar colisoes
+#include "geometry.h"
+
+int collision (Hitbox a, Hitbox b);
 
 #endif

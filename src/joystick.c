@@ -11,6 +11,8 @@ joystick *joystick_create() {
     new_joystick->down = 0;
     new_joystick->left = 0;
 
+    new_joystick->jump = 0;
+
     return new_joystick;
 }
 
@@ -32,4 +34,12 @@ void joystick_down(joystick *joystick) {
 
 void joystick_left(joystick *joystick) {
     joystick->left ^= 1;
+}
+
+void joystick_jump_hold(joystick *joystick) {
+    joystick->jump = 1;
+}
+
+void joystick_jump_release(joystick *joystick) {
+    joystick->jump = 0;
 }
