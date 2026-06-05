@@ -2,28 +2,20 @@
 #define PLAYER_H
 
 #include "joystick.h"
-#include "geometry.h"
+#include "physics.h"
 #include "constants.h"
 
+#include "physics.h"
+#include "sprite.h"
+
 typedef struct {
-    int height;
-    int width;
+    PhysicsBody body;
+    Sprite sprite;
+    joystick control;
+} Player;
 
-    int x;
-    int y;
-
-    float vy;
-    int step_size;
-    int grounded;
-
-    AnimState anim;
-
-    joystick *control;
-} player;
-
-player *player_create();
-void player_move(player *player, int steps, int trajectory, int max_x, int max_y);
-Hitbox player_get_hitbox(player *player);
-void player_destroy(player *player);
+Player *player_create (float x, float y, int w, int h, Sprite sprite);
+void player_move (Player *player);
+void player_destroy(Player *player);
 
 #endif

@@ -11,8 +11,7 @@ typedef struct {
     int jump;
 } joystick;
 
-joystick *joystick_create();
-void joystick_destroy(joystick *joystick);
+joystick joystick_create();
 void joystick_up(joystick *joystick);
 void joystick_right(joystick *joystick);
 void joystick_down(joystick *joystick);

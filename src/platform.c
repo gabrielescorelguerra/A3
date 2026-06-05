@@ -1,27 +1,24 @@
 #include <stdlib.h>
 
 #include "platform.h"
-#include "player.h"
-#include "geometry.h"
+#include "physics.h"
+#include "sprite.h"
 
-platform *platform_create(int x, int y, int width, int height) {
-    platform *new_platform;
-    if (! (new_platform = malloc (sizeof (platform))))
+// retorna plataforma
+Platform *platform_create(float x, float y, int w, int h, Sprite *sprite) {
+    Platform *new_platform;
+    if (! (new_platform = malloc (sizeof (Platform))))
         return NULL;
 
-    new_platform->x = x;
-    new_platform->y = y;
-    new_platform->width = width;
-    new_platform->height = height;
+    new_platform->hitbox.x = x;
+    new_platform->hitbox.y = y;
+    new_platform->hitbox.w = w;
+    new_platform->hitbox.h = h;
+    new_platform->sprite = *sprite;
 
     return new_platform;
 }
 
-Hitbox platform_get_hitbox(platform *platform) {
-    return (Hitbox) {
-        platform->x,
-        platform->y,
-        platform->width,
-        platform->height
-    };
+void platform_destroy(Platform *platform) {
+    free (platform);
 }

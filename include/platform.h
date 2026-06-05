@@ -1,16 +1,19 @@
 #ifndef PLATAFORM_H
 #define PLATAFORM_H
 
-#include "player.h"
+#include "physics.h"
+#include "sprite.h"
 
+// plataforma
 typedef struct {
-    int x;
-    int y;
-    int width;
-    int height;
-} platform;
+    Hitbox hitbox;
+    Sprite sprite;
+} Platform;
+    
+// retorna plataforma
+Platform *platform_create(float x, float y, int w, int h, Sprite *sprite);
 
-platform *platform_create(int x, int y, int width, int height);
-Hitbox platform_get_hitbox(platform *platform);
+// destruir plataforma
+void platform_destroy(Platform *platform);
 
 #endif

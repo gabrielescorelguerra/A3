@@ -6,12 +6,13 @@
 #include "constants.h"
 #include "mob.h"
 
-void render_player(player *player, ALLEGRO_BITMAP *player_bitmap_sheet, int camera_x) {
+void render_player(Player *player, ALLEGRO_BITMAP *player_bitmap_sheet, int camera_x) {
 
     int bitmap_y;
     int tag = 0;
 
     // fazer switch so mudar o bitmap ja q o resto n muda
+    /*
     switch (player->anim)
     {
     case ANIM_IDLE:
@@ -43,14 +44,22 @@ void render_player(player *player, ALLEGRO_BITMAP *player_bitmap_sheet, int came
         + player->x - camera_x - player->width/2, player->y - player->height/2,
         tag
     );
+    */
+   al_draw_bitmap_region(
+        player_bitmap_sheet,
+        0, 0,
+        GM_PLAYER_WIDTH, GM_PLAYER_HEIGHT,
+        player->body.hitbox.x - camera_x, player->body.hitbox.y,
+        0
+    );
 }
 
 void render_mob (Mob *mob, ALLEGRO_BITMAP *player_bitmap_sheet, int camera_x) {
     al_draw_bitmap_region(
         player_bitmap_sheet,
         0, 0,
-        mob->h, mob->w,
-        mob->x - camera_x - mob->w/2, mob->y - mob->h/2,
+        mob->body.hitbox.w, mob->body.hitbox.h,
+        mob->body.hitbox.x - camera_x, mob->body.hitbox.y,
         0
     );
 }

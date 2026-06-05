@@ -3,8 +3,9 @@
 
 #include "constants.h"
 
-void animation_update(player *player) {
+void animation_update(Player *player) {
     // refazer
+    /*
     if (!player->grounded) {
         if (player->vy < 0) {
             if (player->control->right) {
@@ -25,4 +26,5 @@ void animation_update(player *player) {
         player->anim = ANIM_WALK_BACKWARD;
     } else 
             player->anim = ANIM_IDLE; //ajejtiea
+    */
 }

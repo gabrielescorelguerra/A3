@@ -2,13 +2,20 @@
 #define CONSTANTS_H
 
 // fazer typedef e tirar =
-enum Trajectories {
+
+typedef enum {
     GM_TRAJECTORY_UP = 0,
     GM_TRAJECTORY_RIGHT = 1,
     GM_TRAJECTORY_DOWN = 2,
     GM_TRAJECTORY_LEFT = 3
-};
+} Trajectory;
 
+typedef enum {
+    GM_MOB_PATROL_X,
+    GM_MOB_CHASE
+} MobMovementType;
+
+/*
 typedef enum AnimState {
     ANIM_IDLE,
     ANIM_WALK_FOWARD,
@@ -17,7 +24,7 @@ typedef enum AnimState {
     ANIM_JUMP_BACKWARD,
     ANIM_JUMP_IDLE,
     ANIM_FALL
-} AnimState;
+} AnimState;*/
 
 /*
 enum CollisionSide{
@@ -38,8 +45,8 @@ enum CollisionSide{
 // JANELA
 
 #define GM_SCREEN_W 1280
-#define GM_SCREEN_H 720
-#define GM_WORLD_W (GM_SCREEN_W * 2)
+#define GM_SCREEN_H 1000
+#define GM_WORLD_W ((GM_SCREEN_H / 128) * 1024)
 
 // CAMERA
 
@@ -47,7 +54,7 @@ enum CollisionSide{
 
 // FISICA
 
-#define GM_GRAVITY 0.8
+#define GM_GRAVITY 0.5
 
 #define GM_VEL_X 5
 

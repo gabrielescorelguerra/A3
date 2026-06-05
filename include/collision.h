@@ -1,7 +1,7 @@
 #ifndef COLLISION_H
 #define COLLISION_H
 
-#include "geometry.h"
+#include "physics.h"
 
 int collision (Hitbox a, Hitbox b);
 

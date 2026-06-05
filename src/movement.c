@@ -1,28 +1,50 @@
-#include "player.h"
 #include "constants.h"
+#include "physics.h"
 
-void update_position_player(player *player){		
-    /* if (player->control->up) {
-        player_move (player, 1, GM_TRAJECTORY_UP, GM_WORLD_W, GM_SCREEN_H);
-    } */
-    if (player->control->right) {
-        player_move (player, 1, GM_TRAJECTORY_RIGHT, GM_WORLD_W, GM_SCREEN_H);
-    }
-    /* if (player->control->down && !(player->grounded)) {
-        player->vy = GM_GRAVITY;
-    } */
-    if (player->control->left) {
-        player_move (player, 1, GM_TRAJECTORY_LEFT, GM_WORLD_W, GM_SCREEN_H);
-    }
+// atualiza a posição de um corpo
+void update_position_body(PhysicsBody *body, Trajectory trajectory, int min, int max) {
+    Hitbox *hitbox = &body->hitbox;
 
-    if (player->control->jump && (player->grounded)) {
-        player->vy -= GM_PLAYER_JUMP_SPEED;
-        player->grounded = 0;
-    }
+    switch (trajectory)
+    {
+    case GM_TRAJECTORY_UP:
+        if (hitbox->y - body->vy > min)
+            hitbox->y -= body->vy;
+        else
+            hitbox->y = min;
+        break;
 
-    // update gravity
-    if (!player->grounded) {
-        player->vy += GM_GRAVITY;
-        player->y += player->vy;    
+    case GM_TRAJECTORY_RIGHT:
+        if ((hitbox->x + hitbox->w + body->vx) < max)
+            hitbox->x += body->vx;
+        else
+            hitbox->x = max - hitbox->w;
+        break;
+
+    case GM_TRAJECTORY_DOWN:
+        if ((hitbox->y + hitbox->h + body->vy) < max)
+            hitbox->y += body->vy;
+        else
+            hitbox->y = max - hitbox->h;
+        break;
+
+    case GM_TRAJECTORY_LEFT:
+        if (hitbox->x - body->vx > min)
+            hitbox->x -= body->vx;
+        else 
+            hitbox->x = min;
+        break;
+
+    default:
+        break;
+    }
+}
+
+void update_gravity_body(PhysicsBody *body, int min_y, int max_y) {
+    if (! (body->grounded)) {
+        body->vy += GM_GRAVITY;
+        update_position_body(body, GM_TRAJECTORY_DOWN, min_y, max_y);
+    } else {
+        body->vy = 0;
     }
 }

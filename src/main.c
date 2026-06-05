@@ -11,19 +11,20 @@
 #include "constants.h"
 #include "movement.h"
 #include "joystick.h"
-#include "geometry.h"
+#include "physics.h"
 #include "collision.h"
 #include "platform.h"
 #include "render.h"
 #include "animations.h"
 #include "mob.h"
+#include "sprite.h"
 
 #define FRAME_RATE 30
 
-#define TEST_PLAT_X GM_WORLD_W/2
-#define TEST_PLAT_Y 720
+#define TEST_PLAT_X 0
+#define TEST_PLAT_Y GM_SCREEN_H - 70
 #define TEST_PLAT_W GM_WORLD_W
-#define TEST_PLAT_H 300
+#define TEST_PLAT_H 70
 
 // talvez adicionar must_init
 
@@ -44,17 +45,22 @@ int main() {
     al_register_event_source(queue, al_get_display_event_source(disp));	
     al_register_event_source(queue, al_get_timer_event_source(timer));
 
-    // cria player
-    player *player = player_create ();
-    if (!player)
-        return -1;
+    // cria plataforma
 
-    platform *platform = platform_create (GM_WORLD_W/2, GM_SCREEN_H - 100, GM_WORLD_W, 100);
-    Mob *mob = mob_create (300, 0, 128, 128, 400, 0, 10);
+    ALLEGRO_BITMAP *background_bitmap = al_load_bitmap("assets/bg.png");
+    Sprite *background_sprite = sprite_create(background_bitmap, 1, 1, 1, GM_WORLD_W, GM_SCREEN_H);
+    Platform *platform = platform_create (TEST_PLAT_X, TEST_PLAT_Y, TEST_PLAT_W, TEST_PLAT_H, background_sprite);
 
-    ALLEGRO_BITMAP *player_bitmap_sheet = al_load_bitmap("assets/player.png");
+    // cria mob
     ALLEGRO_BITMAP *mob_bitmap = al_load_bitmap("assets/mob.png");
-    ALLEGRO_BITMAP *background_bitmap = al_load_bitmap("assets/teste.jpg");
+    Sprite *mob_sprite = sprite_create(mob_bitmap, 1, 1, 1, 128, 128);
+    Mob *mob = mob_create (400, 400, 128, 128, 200, 0, 2, GM_MOB_PATROL_X, mob_sprite);
+
+    // cria player
+    ALLEGRO_BITMAP *player_bitmap_sheet = al_load_bitmap("assets/player.png");
+    Sprite *player_sprite = sprite_create(player_bitmap_sheet, 1, 1, 1, 128, 128);
+    // ajeitar e fzr ser player_sprite e nao *player_sprite
+    Player *player = player_create(0, 60, 128, 128, *player_sprite);
 
     // camera
     int camera_x;
@@ -67,36 +73,38 @@ int main() {
 
         if (event.type == ALLEGRO_EVENT_TIMER) {
 
-            int old_player_x = player->x;
-            int old_player_y = player->y;
+            int old_player_x = player->body.hitbox.x;
+            int old_player_y = player->body.hitbox.y;
 
             // updates
-            update_position_player(player);
-            mob_move (mob);
+            player_move(player);
+            mob_move(mob);
+            update_gravity_body(&player->body, 0, GM_SCREEN_H);
+            update_gravity_body(&mob->body, 0, GM_SCREEN_H);
 
             al_clear_to_color(al_map_rgb(0, 0, 0));
 
-            Hitbox player_hitbox = player_get_hitbox(player);
-            Hitbox platform_hitbox = platform_get_hitbox(platform);
+            Hitbox player_hitbox = player->body.hitbox;
+            Hitbox platform_hitbox = platform->hitbox;
 
             if (collision (player_hitbox, platform_hitbox)) {
-                player->y = old_player_y;
-                player->grounded = 1;
-                player->vy = 0;
-            } /* else {
-                player->grounded = 0;
-            }*/
+                player->body.hitbox.y = platform_hitbox.y - player_hitbox.h;
+                player->body.grounded = 1;
+                player->body.vy = 0;
+            }  else {
+                player->body.grounded = 0;
+            }
 
             // camera
-            camera_x = player->x - GM_CAMERA_TRIGGER_X;;
+            camera_x = player->body.hitbox.x - GM_CAMERA_TRIGGER_X;;
             if (camera_x < 0)
                 camera_x = 0;
             if (camera_x > GM_WORLD_W - GM_SCREEN_W)
                 camera_x = GM_WORLD_W - GM_SCREEN_W;
 
             // render
-            al_draw_scaled_bitmap(background_bitmap, 0, 0, 720, 360, -camera_x, 0, GM_WORLD_W, GM_SCREEN_H, 0);
-            animation_update(player);
+            al_draw_scaled_bitmap(background_bitmap, 0, 0, 1024, 128, -camera_x, 0, GM_WORLD_W, GM_SCREEN_H, 0);
+            //animation_update(player);
             render_player(player, player_bitmap_sheet, camera_x);
             render_mob(mob, mob_bitmap, camera_x);
 
@@ -117,19 +125,19 @@ int main() {
         if (event.type == ALLEGRO_EVENT_KEY_DOWN || event.type == ALLEGRO_EVENT_KEY_UP) {
             switch (event.keyboard.keycode) {
                 case ALLEGRO_KEY_UP:
-                    joystick_up(player->control);
+                    joystick_up(&player->control);
                     break;
                 case ALLEGRO_KEY_RIGHT:
-                    joystick_right(player->control);
+                    joystick_right(&player->control);
                     break;
                 case ALLEGRO_KEY_DOWN:
-                    joystick_down(player->control);
+                    joystick_down(&player->control);
                     break;
                 case ALLEGRO_KEY_LEFT:
-                    joystick_left(player->control);
+                    joystick_left(&player->control);
                     break;
                 case ALLEGRO_KEY_SPACE:
-                    (event.type == ALLEGRO_EVENT_KEY_DOWN) ? joystick_jump_hold(player->control) : joystick_jump_release(player->control);
+                    (event.type == ALLEGRO_EVENT_KEY_DOWN) ? joystick_jump_hold(&player->control) : joystick_jump_release(&player->control);
                     break;
             }
         }

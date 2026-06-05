@@ -7,7 +7,7 @@
 #include "player.h"
 #include "mob.h"
 
-void render_player(player *player, ALLEGRO_BITMAP *player_bitmap_sheet, int camera_x);
+void render_player(Player *player, ALLEGRO_BITMAP *player_bitmap_sheet, int camera_x);
 void render_mob (Mob *mob, ALLEGRO_BITMAP *player_bitmap_sheet, int camera_x);
 
 #endif

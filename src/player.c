@@ -3,79 +3,50 @@
 #include "player.h"
 #include "joystick.h"
 #include "constants.h"
-#include "geometry.h"
+#include "physics.h"
+#include "movement.h"
 
-player *player_create() {
-    player *new_player;
-    if (! (new_player = malloc(sizeof (player))))
+// depois fazer ser *sprite e nao sprite
+// dps talvez usar speed e nao vx
+Player *player_create (float x, float y, int w, int h, Sprite sprite) {
+    Player *new_player;
+    if (! (new_player = malloc (sizeof (Player))))
         return NULL;
 
-    new_player->width = GM_PLAYER_WIDTH;
-    new_player->height = GM_PLAYER_HEIGHT;
-
-    new_player->x = 0 + new_player->width/2;
-    new_player->y = 0 + new_player->height/2;
-
-    new_player->vy = 0.0;
-    new_player->step_size = GM_WALK_STEP;
-    new_player->grounded = 0;
-
-    new_player->anim = ANIM_IDLE;
-
-    // depois codigo especifico de erro AJEITAR
+    new_player->body = physics_body_create (x, y, 10, 0, w, h);
+    new_player->sprite = sprite;
     new_player->control = joystick_create();
-    if (!(new_player->control))
-        return NULL;
 
     return new_player;
 }
 
-// tenho que ajeitar pro pulo
-void player_move(player *player, int steps, int trajectory, int max_x, int max_y) {
-    int x = player->x;
-    int y = player->y;
-    int width = player->width;
-    int height = player->height;
+// VER QND QUE MUDA VX
 
-    int distance = steps * player->step_size;
+// BOM USAR GM_NO_LIMIT AO INVES DE 0
+void player_move (Player *player) {
 
-    switch (trajectory) {
-    /*case GM_TRAJECTORY_UP:
-        if ((player->y - player->height/2 - distance) > 0)
-            player->y -= distance;
-        break;*/
-    case GM_TRAJECTORY_RIGHT:
-        if ((player->x + player->width/2 + distance) < max_x)
-            player->x += distance;
-        break;
-    /*case GM_TRAJECTORY_DOWN:
-        if ((player->y + player->height/2 + distance) < max_y)
-            player->y += distance;
-        break;*/
-    case GM_TRAJECTORY_LEFT:
-        if ((player->x - player->width/2 - distance) > 0)
-            player->x -= distance;
-        break;
+    int min_x = 0, min_y = 0;
+    int max_x = GM_WORLD_W, max_y = GM_SCREEN_H;
+
+    // ir para os lados
+    if (player->control.right) {
+        update_position_body (&player->body, GM_TRAJECTORY_RIGHT, min_x, max_x);
+    }
+    if (player->control.left) {
+        update_position_body (&player->body, GM_TRAJECTORY_LEFT, min_x, max_x);
     }
 
-    // update y
-    player->y += player->vy;
-}
-
-
-// retorna area de colisao do player
-Hitbox player_get_hitbox(player *player) {
-    return (Hitbox){
-        player->x,
-        player->y,
-        player->width,
-        player->height
-    };
+    // jump
+    if (player->control.jump && player->body.grounded) {
+        player->body.vy = -GM_PLAYER_JUMP_SPEED;
+        player->body.grounded = 0;
+    }
+    // ver se precisa
+    update_gravity_body (&player->body, min_y, max_y);
 }
 
 
 // destroy
-void player_destroy(player *player) {
-    joystick_destroy (player->control);
+void player_destroy(Player *player) {
     free (player);
 }
